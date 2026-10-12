@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>카오스온라인 랭킹정보</title>
+  <link rel="icon" href="favicon_red.ico" type="image/x-icon">
+  <link rel="stylesheet" href="style.css?v=20260311_V123">
+</head>
+
+<body>
+  <div class="container">
+    <header>
+      <div class="profile-card">
+        <div class="user-info">
+          <!-- Mobile row 1: Nickname + Rank/WR -->
+          <div class="user-info-top-row">
+            <h1 id="user-nickname">닉네임: ---</h1>
+            <div class="header-stats">
+              <span id="user-rank">--위</span>
+              <span id="user-season-wr">--%</span>
+            </div>
+          </div>
+
+          <!-- Mobile row 2: Meta -->
+          <div class="user-meta">
+            <span class="ano-tag" id="user-ano">ANO: ---</span>
+            <span class="grade-tag" id="user-grade">등급: ---</span>
+          </div>
+
+          <!-- Mobile row 3: Heroes + Pagination (V52) -->
+          <div class="hero-pagination-wrapper">
+            <div class="hero-list" id="hero-list">
+              <!-- Heroes injected by JS -->
+            </div>
+            <div id="pagination-top"></div>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <main class="dashboard-grid">
+      <!-- Sidebar stats -->
+      <aside class="left-panel">
+        <div class="search-container-v2">
+          <input type="text" id="search-input" class="search-input-v2" placeholder="닉네임 또는 ANO 검색..."
+            autocomplete="off">
+          <span id="search-clear" class="search-clear-btn" title="검색어 지우기">×</span>
+        </div>
+        <div class="card">
+          <h2 class="card-title">Detailed Information</h2>
+          <div id="stats-container">
+            <div class="stat-row"><span class="stat-label">닉네임</span><span class="stat-value" id="stat-nick">---</span>
+            </div>
+            <div class="stat-row"><span class="stat-label">전닉</span><span class="stat-value" id="stat-prev-nicks"
+                style="font-size:0.8rem; color:var(--text-secondary); max-width:180px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">---</span>
+            </div>
+            <div class="stat-row"><span class="stat-label">ANO</span><span class="stat-value" id="stat-ano-val"
+                style="color: var(--accent-blue)">---</span></div>
+            <div class="stat-row"><span class="stat-label">전체 총전적</span><span class="stat-value"
+                id="stat-overall-rec">---</span></div>
+            <div class="stat-row"><span class="stat-label">랭대 총전적</span><span class="stat-value"
+                id="stat-total-rec">---</span></div>
+            <div class="stat-row"><span class="stat-label">시즌 전적</span><span class="stat-value"
+                id="stat-season-rec">---</span></div>
+            <div class="stat-row"><span class="stat-label">현재 연승/연패</span><span class="stat-value"
+                id="stat-consecutive">---</span></div>
+            <div class="stat-row"><span class="stat-label">총 기여도</span><span class="stat-value"
+                id="stat-total-cont">---</span></div>
+            <div class="stat-row"><span class="stat-label">전투 기여도</span><span class="stat-value"
+                id="stat-combat-cont">---</span></div>
+            <div class="stat-row"><span class="stat-label">전투 참여율</span><span class="stat-value"
+                id="stat-combat-rate">---</span></div>
+            <div class="stat-row"><span class="stat-label">평균 KDA</span><span class="stat-value" id="stat-kda"
+                style="color:#ff4d4d">---</span></div>
+            <div class="stat-row"><span class="stat-label">평균 레벨</span><span class="stat-value"
+                id="stat-avg-lv">---</span></div>
+            <div class="stat-row"><span class="stat-label">평균 디스펠</span><span class="stat-value"
+                id="stat-avg-dispell">---</span></div>
+            <div class="stat-row"><span class="stat-label">평균 포션</span><span class="stat-value"
+                id="stat-avg-potion">---</span></div>
+            <div class="stat-row" style="border-bottom: none;"><span class="stat-label">평균 골드</span><span
+                class="stat-value" id="stat-avg-gold" style="color:#D29922">---</span></div>
+            <div class="stat-row"
+              style="margin-top: 15px; border-top: 1px solid var(--border-color); padding-top: 10px; justify-content: center; align-items: center; gap: 10px;">
+              <span class="stat-label" style="color: #fff; font-weight: bold; font-size: 1.0rem;">마지막 업데이트</span>
+              <span class="stat-value" id="last-update-time" style="color: #fff; font-size: 1.0rem;">---</span>
+            </div>
+          </div>
+        </div>
+      </aside>
+
+      <!-- Main ranking table -->
+      <section class="right-panel">
+        <div class="rank-scroll-area">
+          <div class="card">
+            <div class="rank-section-wrapper">
+              <div id="table-container" class="table-container">
+                <table class="ranking-table">
+                  <thead>
+                    <tr>
+                      <th data-sort="rank" style="cursor:pointer; user-select:none; width:60px; text-align:center;">순위 ↕
+                      </th>
+                      <th data-sort="nick" style="cursor:pointer; user-select:none; width:180px; text-align:center;">닉네임
+                        ↕</th>
+                      <th class="hide-on-panel hide-on-mobile" style="width:230px; text-align:center;">선호 영웅</th>
+                      <th class="hide-on-panel" data-sort="grade"
+                        style="cursor:pointer; user-select:none; width:120px; text-align:center;">등급 ↕</th>
+                      <th class="hide-on-panel" data-sort="wr" colspan="2"
+                        style="cursor:pointer; user-select:none; width:200px; text-align:center;">전적 (승률) ↕</th>
+                      <th class="hide-on-mobile" data-sort="ano"
+                        style="cursor:pointer; user-select:none; width:100px; text-align:center;">ANO ↕</th>
+                    </tr>
+                  </thead>
+                  <tbody id="ranking-body">
+                    <!-- Rows injected by JS -->
+                  </tbody>
+                </table>
+              </div>
+
+              <!-- 우측 슬라이딩 프로필 패널 -->
+              <div id="sliding-profile" class="sliding-profile-panel">
+                <div class="panel-content">
+                  <!-- PROFILE CARD -->
+                  <div class="sp-card">
+                    <div class="sp-card-title">
+                      <span>PROFILE</span>
+                      <button class="close-panel-btn" onclick="closeProfilePanel()">✖ 닫기</button>
+                    </div>
+                    <div class="sp-card-body">
+                      <div
+                        style="display:flex; justify-content:space-between; align-items:flex-end; margin-bottom: 4px;">
+                        <div style="display:flex; align-items:baseline; gap: 10px;">
+                          <h2 id="sp-nick" style="font-size:1.6rem; font-weight:700; color:#fff; margin:0;">닉네임</h2>
+                          <span id="sp-grade" style="font-weight:bold; font-size:1rem;">등급</span>
+                        </div>
+                        <div style="text-align: right;">
+                          <span style="font-size:0.8rem; color:var(--text-dim); display:block;">시즌 순위</span>
+                          <span id="sp-rank"
+                            style="font-size:1.4rem; font-weight:800; color:#ffa657; line-height:1;">--위</span>
+                        </div>
+                      </div>
+                      <div
+                        style="display:flex; justify-content:space-between; align-items:center; background:var(--border-color); padding:4px 8px; border-radius:4px; margin-bottom:4px;">
+                        <span id="sp-ano" style="color:var(--text-dim); font-size:0.85rem;">ANO ---</span>
+                      </div>
+                      <div id="sp-memo-container"
+                        style="display:none; background:rgba(255,255,255,0.05); padding:6px 10px; border-radius:4px; margin-top:8px;">
+                        <span id="sp-memo" style="color:#8b949e; font-size:0.9rem; font-weight:500;">---</span>
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- STATS CARD (Mobile optimized) -->
+                  <div class="sp-card sp-stats-card">
+                    <div class="sp-card-title">STATISTICS</div>
+                    <div class="sp-card-body">
+                      <div class="sp-stats-grid">
+                        <!-- [Left Column] (Items 1-6) -->
+                        <div class="sp-stat-item"><span class="sp-stat-label">전체 총전적</span>
+                          <div class="sp-stat-val" id="sp-stat-overall-rec">---</div>
+                        </div>
+                        <div class="sp-stat-item"><span class="sp-stat-label">랭대 총전적</span>
+                          <div class="sp-stat-val" id="sp-stat-total-rec">---</div>
+                        </div>
+                        <div class="sp-stat-item"><span class="sp-stat-label">시즌 전적</span>
+                          <div class="sp-stat-val" id="sp-stat-season-rec">---</div>
+                        </div>
+                        <div class="sp-stat-item"><span class="sp-stat-label">현재 연승</span>
+                          <div class="sp-stat-val" id="sp-stat-consecutive">---</div>
+                        </div>
+                        <div class="sp-stat-item"><span class="sp-stat-label">평균 골드</span>
+                          <div class="sp-stat-val" id="sp-stat-avg-gold" style="color:#D29922">0</div>
+                        </div>
+                        <div class="sp-stat-item"><span class="sp-stat-label">평균 포션</span>
+                          <div class="sp-stat-val" id="sp-stat-avg-potion">0회</div>
+                        </div>
+
+                        <!-- [Right Column] (Items 7-12) -->
+                        <div class="sp-stat-item"><span class="sp-stat-label">총 기여도</span>
+                          <div class="sp-stat-val" id="sp-stat-total-cont">0</div>
+                        </div>
+                        <div class="sp-stat-item"><span class="sp-stat-label">전투 기여도</span>
+                          <div class="sp-stat-val" id="sp-stat-combat-cont">0</div>
+                        </div>
+                        <div class="sp-stat-item"><span class="sp-stat-label">전투 참여율</span>
+                          <div class="sp-stat-val" id="sp-stat-combat-rate">0%</div>
+                        </div>
+                        <div class="sp-stat-item"><span class="sp-stat-label">평균 KDA</span>
+                          <div class="sp-stat-val" id="sp-stat-kda" style="color:#ff4d4d; font-weight:bold;">0.00</div>
+                        </div>
+                        <div class="sp-stat-item"><span class="sp-stat-label">평균 레벨</span>
+                          <div class="sp-stat-val" id="sp-stat-avg-lv">Lv.0</div>
+                        </div>
+                        <div class="sp-stat-item"><span class="sp-stat-label">평균 디스펠</span>
+                          <div class="sp-stat-val" id="sp-stat-avg-dispell">0회</div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- RECORDS CARD (flex 레이아웃 유지) -->
+                  <div class="sp-card">
+                    <div class="sp-card-title">RECORDS</div>
+                    <div class="sp-card-body" style="padding: 0; background: transparent; border: none;">
+                      <div class="record-container">
+                        <!-- 전체 전적 -->
+                        <div class="record-block">
+                          <div class="record-title">전체 전적</div>
+                          <div class="record-row">
+                            <span class="record-label">전적</span>
+                            <span class="record-val" id="sp-all-rec">0승 0패 0무</span>
+                          </div>
+                          <div class="record-swr" id="sp-all-swr">시즌 0%</div>
+                          <div class="record-bar-bg">
+                            <div class="record-bar-fill" id="sp-all-bar" style="width: 0%;"></div>
+                          </div>
+                          <div class="extra-record-rows" id="sp-all-extra">
+                            <!-- JS injected -->
+                          </div>
+                        </div>
+
+                        <!-- 랭킹 전적 -->
+                        <div class="record-block">
+                          <div class="record-title">랭킹 전적</div>
+                          <div class="record-row">
+                            <span class="record-label">전적</span>
+                            <span class="record-val" id="sp-rk-rec">0승 0패 0무</span>
+                          </div>
+                          <div class="record-swr" id="sp-rk-swr">시즌 0%</div>
+                          <div class="record-bar-bg">
+                            <div class="record-bar-fill" id="sp-rk-bar" style="width: 0%;"></div>
+                          </div>
+                          <div class="extra-record-rows" id="sp-rk-extra">
+                            <!-- JS injected -->
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- HEROES CARD -->
+                  <div class="sp-card">
+                    <div class="sp-card-title" id="sp-hero-title">선호 영웅 (이번 시즌)</div>
+                    <div class="sp-card-body" style="padding: 6px;">
+                      <table class="sp-hero-table">
+                        <thead>
+                          <tr>
+                            <th style="width: 30px; padding-left: 2px;">#</th>
+                            <th style="text-align: left;">영웅</th>
+                            <th style="width: 55px; text-align: left; cursor: pointer; white-space: nowrap;"
+                              data-hero-sort="playCnt">판수 ↓</th>
+                            <th style="width: 60px; text-align: left; cursor: pointer; white-space: nowrap;"
+                              data-hero-sort="winningRate">승률 ↕</th>
+                            <th style="width: 80px; text-align: left; cursor: pointer; white-space: nowrap;"
+                              data-hero-sort="partyWinningRate">파티승률 ↕</th>
+                          </tr>
+                        </thead>
+                        <tbody id="sp-hero-list">
+                          <!-- JS injected -->
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
+
+                </div>
+              </div>
+            </div> <!-- rank-section-wrapper end -->
+          </div> <!-- card end -->
+          <div id="pagination" style="display:flex; justify-content:flex-start; gap:10px; padding:15px 0 20px 0;">
+            <!-- Pagination injected by JS -->
+          </div>
+      </section>
+    </main>
+  </div>
+
+  <script defer src="app_v38.js?v=63"></script>
+</body>
+
+</html>

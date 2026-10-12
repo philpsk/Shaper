@@ -1,0 +1,1387 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&family=Noto+Sans+KR:wght@400;700&display=swap');
+
+:root {
+  --bg-color: #0D1117;
+  --card-bg: rgba(22, 27, 34, 0.8);
+  --border-color: #30363d;
+  --text-main: #C9D1D9;
+  --text-dim: #8B949E;
+  --accent-blue: #58A6FF;
+  --win-green: #238636;
+  --loss-red: #da3633;
+  --gold: #D29922;
+  --purple: #A371F7;
+  --glass: rgba(255, 255, 255, 0.03);
+  --win-color: #238636;
+  --loss-color: #da3633;
+}
+
+.win-text {
+  color: var(--win-color) !important;
+}
+
+.loss-text {
+  color: var(--loss-color) !important;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html,
+body {
+  height: 100%;
+  overflow: hidden;
+  /* 바깥 스크롤 완전 제거 */
+  background-color: var(--bg-color);
+  color: var(--text-main);
+  font-family: 'Inter', 'Noto Sans KR', sans-serif !important;
+  line-height: 1.4;
+  background: radial-gradient(circle at 50% 0%, #1c2128 0%, #0d1117 100%);
+}
+
+/* 전체 페이지를 뷰포트 높이에 맞게 flex column */
+.container {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 8px 16px;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+/* 헤더 압축 */
+header {
+  flex-shrink: 0;
+}
+
+td {
+  white-space: nowrap !important;
+}
+
+th {
+  background: var(--card-bg);
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  white-space: nowrap !important;
+}
+
+.profile-card {
+  position: relative;
+  background: var(--card-bg);
+  backdrop-filter: blur(10px);
+  border: 1px solid var(--border-color);
+  border-radius: 10px;
+  padding: 10px 18px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4);
+}
+
+.user-info h1 {
+  font-size: 1.6rem;
+  font-weight: 700;
+  margin-bottom: 2px;
+  letter-spacing: -0.5px;
+  white-space: nowrap !important;
+  flex-shrink: 0;
+}
+
+.user-meta {
+  display: flex;
+  gap: 14px;
+  font-family: 'Inter', 'Noto Sans KR', sans-serif;
+  font-size: 0.9rem;
+  white-space: nowrap !important;
+}
+
+.user-meta>span,
+.user-meta>div {
+  white-space: nowrap !important;
+}
+
+.ano-tag,
+#user-ano,
+#sp-ano,
+#stat-ano-val {
+  color: var(--accent-blue);
+  font-weight: 900 !important;
+}
+
+.grade-tag,
+#user-grade,
+#sp-grade {
+  color: var(--gold);
+  font-weight: 900 !important;
+}
+
+.rank-badge {
+  text-align: right;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  justify-content: center;
+}
+
+.rank-title {
+  font-size: 0.75rem;
+  color: var(--text-dim);
+  text-transform: uppercase;
+}
+
+.rank-value {
+  font-size: 2.4rem;
+  font-weight: 800;
+  color: #FF8C00;
+  line-height: 1;
+  text-shadow: 0 0 16px rgba(255, 140, 0, 0.3);
+}
+
+/* Desktop Header structure adjustment */
+.user-info-top-row {
+  display: flex;
+  align-items: baseline;
+  gap: 20px;
+}
+
+.header-stats {
+  display: flex;
+  gap: 15px;
+  white-space: nowrap;
+  align-items: baseline;
+}
+
+#user-rank,
+#user-season-wr {
+  font-size: 1.4rem !important;
+  font-weight: 800 !important;
+  color: #ffa657 !important;
+  line-height: 1 !important;
+}
+
+.hero-tag {
+  font-size: 0.8rem;
+}
+
+
+
+.loading-text {
+  color: #8b949e;
+  font-style: italic;
+  animation: pulse 1.5s infinite;
+}
+
+@keyframes pulse {
+  0% {
+    opacity: 0.4;
+  }
+
+  50% {
+    opacity: 1;
+  }
+
+  100% {
+    opacity: 0.4;
+  }
+}
+
+
+/* 페이징 공통 스타일 */
+.pagination-area {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.pg-btn {
+  background: #161B22;
+  border: 1px solid #30363d;
+  color: #C9D1D9;
+  padding: 6px 10px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.85rem;
+  font-weight: 600;
+  transition: all 0.2s;
+  min-width: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.pg-btn:hover:not(:disabled) {
+  background: #21262d;
+  border-color: #8B949E;
+  color: white;
+}
+
+.pg-btn.active {
+  background: var(--accent-blue);
+  border-color: var(--accent-blue);
+  color: white;
+}
+
+.pg-btn:disabled {
+  opacity: 0.2;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+/* 상단 페이지네이션 고정 (V51->V52 헤더 통합) */
+.hero-pagination-wrapper {
+  display: flex !important;
+  flex-direction: row !important;
+  flex-wrap: nowrap !important;
+  align-items: center !important;
+  gap: 15px;
+  margin-top: 5px;
+  width: 100%;
+}
+
+.hero-list {
+  display: inline-flex !important;
+  flex-shrink: 0;
+}
+
+#pagination-top {
+  display: inline-flex !important;
+  align-items: center;
+  gap: 10px;
+  margin: 0;
+  padding: 0;
+  flex-shrink: 0;
+}
+
+.pg-input-wrapper {
+
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-left: 10px;
+  padding-left: 10px;
+  border-left: 1px solid var(--border-color);
+}
+
+.pg-input {
+  width: 50px;
+  padding: 5px;
+  background: var(--bg-color);
+  border: 1px solid var(--border-color);
+  border-radius: 4px;
+  color: var(--accent-blue);
+  text-align: center;
+  font-weight: bold;
+  font-size: 0.85rem;
+  outline: none;
+}
+
+.pg-input::-webkit-inner-spin-button,
+.pg-input::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+.total-pg-label {
+  font-size: 0.8rem;
+  color: var(--text-dim);
+}
+
+/* 대시보드 그리드 - 남은 높이를 모두 사용 */
+.dashboard-grid {
+  display: grid;
+  grid-template-columns: 360px 1fr;
+  width: 100%;
+  gap: 12px;
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
+  align-items: stretch;
+}
+
+/* 왼쪽 패널: sticky + 내부 스크롤 */
+.left-panel {
+  height: 100%;
+  overflow-y: auto;
+  scrollbar-width: thin;
+}
+
+/* 오른쪽 패널: 내부 스크롤만 */
+.right-panel {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+  /* 패널 전체 스크롤 */
+  padding-right: 4px;
+  min-height: 0;
+}
+
+.right-panel::-webkit-scrollbar {
+  width: 6px;
+}
+
+.right-panel::-webkit-scrollbar-track {
+  background: var(--bg-color);
+}
+
+.right-panel::-webkit-scrollbar-thumb {
+  background: var(--border-color);
+  border-radius: 10px;
+}
+
+.right-panel::-webkit-scrollbar-thumb:hover {
+  background: var(--text-dim);
+}
+
+/* 카드 */
+.card {
+  background: var(--card-bg);
+  border: 1px solid var(--border-color);
+  border-radius: 10px;
+  padding: 12px 16px;
+  flex-shrink: 0;
+  margin-bottom: 10px;
+}
+
+/* 랭킹 테이블 하단 카드 - 본문 확장 */
+.right-panel .card {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+}
+
+.card-title {
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--purple);
+  margin-bottom: 8px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* Stat 행 - 간격 확 줄임 */
+.stat-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  padding: 5px 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.stat-label {
+  color: var(--text-dim);
+  font-size: 0.8rem;
+  white-space: nowrap !important;
+}
+
+.stat-value {
+  font-weight: 700;
+  font-size: 0.9rem;
+  font-family: 'Inter', 'Noto Sans KR', sans-serif;
+  text-align: right;
+  white-space: nowrap !important;
+}
+
+/* 랭킹 테이블 */
+.ranking-table {
+  width: 100%;
+  border-collapse: collapse;
+  table-layout: fixed; /* 컬럼 너비 강제 고정 */
+}
+
+.ranking-table thead th {
+  text-align: center;
+  padding: 8px 10px;
+  color: var(--accent-blue);
+  font-size: 0.8rem;
+  position: sticky !important;
+  top: 0 !important;
+  background: #1c2128 !important;
+  /* 다크 배경색으로 고정 */
+  z-index: 100 !important;
+  border-bottom: 2px solid var(--accent-blue) !important;
+  white-space: nowrap !important;
+  vertical-align: middle;
+}
+
+.table-container {
+  overflow-x: auto !important;
+  width: 100%;
+}
+
+.ranking-table td {
+  padding: 12px 10px;
+  border-bottom: 1px solid var(--border-color);
+  font-size: 0.8rem !important;
+  font-weight: 700 !important;
+  /* Bold for all table data */
+  white-space: nowrap !important;
+}
+
+.ranking-table tr:hover {
+  background: rgba(255, 255, 255, 0.03);
+  cursor: pointer;
+}
+
+.win-rate-pill {
+  padding: 2px 8px;
+  border-radius: 16px;
+  font-weight: 700;
+  font-size: 0.78rem;
+}
+
+/* 전적 셀 정렬: 승패 바형 디자인 */
+.record-cell {
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  width: 100%;
+  gap: 12px;
+  padding-left: 5px;
+}
+
+.wl-bar-container {
+  display: flex;
+  width: 150px;
+  height: 24px;
+  background: #333;
+  border-radius: 6px;
+  overflow: hidden;
+  font-family: 'Roboto Mono', monospace;
+  font-size: 0.8rem;
+  font-weight: 700;
+  line-height: 24px;
+  position: relative;
+  box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.5);
+  flex-shrink: 0;
+  /* 축소 방지 */
+}
+
+.wl-bar-win {
+  background: #4176d6;
+  /* 파란색 W */
+  color: #fff;
+  text-align: left;
+  padding-left: 8px;
+  white-space: nowrap;
+  transition: width 0.3s ease;
+  display: flex;
+  align-items: center;
+}
+
+.wl-bar-loss {
+  background: #e63946;
+  /* 빨간색 L */
+  color: #fff;
+  text-align: right;
+  padding-right: 8px;
+  white-space: nowrap;
+  transition: width 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  flex: 1;
+}
+
+.wl-label {
+  margin-left: 4px;
+  font-size: 0.7rem;
+  opacity: 0.9;
+}
+
+.rc-pct-bar {
+  font-family: 'Roboto Mono', monospace;
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: #C9D1D9;
+  min-width: 55px;
+  text-align: right;
+}
+
+
+
+/* 애니메이션 */
+@keyframes fadeInDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* 전역 스크롤바 */
+::-webkit-scrollbar {
+  width: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--bg-color);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--border-color);
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--text-dim);
+}
+
+/* 랭킹 테이블용 선호 영웅 아이콘 */
+.hero-icons-container {
+  display: flex;
+  gap: 4px;
+  justify-content: center;
+  align-items: center;
+  min-height: 30px;
+}
+
+.hero-mini-icon {
+  width: 28px;
+  height: 28px;
+  border-radius: 4px;
+  border: 1px solid var(--border-color);
+  background: #000;
+  object-fit: cover;
+  transition: transform 0.1s;
+}
+
+.hero-mini-icon:hover {
+  transform: scale(1.2);
+  z-index: 10;
+  border-color: var(--accent-blue);
+}
+
+/* --- 슬라이딩 프로필 패널 --- */
+.rank-section-wrapper {
+  display: flex;
+  width: 100%;
+  flex: 1;
+  min-height: 0;
+  height: 100%;
+  overflow: visible !important;
+  /* sticky 헤더를 위해 필수 */
+  position: relative;
+  min-height: 600px; /* Detailed Information panel height approx */
+}
+
+.table-container {
+  flex: 1;
+  transition: all 0.3s ease;
+  overflow: visible !important;
+  /* sticky 기능을 위해 가시성 설정 */
+  min-width: 0;
+}
+
+/* Panel Open State Layout Adjustments */
+.dashboard-grid.panel-open {
+  grid-template-columns: 360px 1fr;
+  gap: 12px;
+  align-items: stretch;
+}
+
+.dashboard-grid.panel-open .left-panel {
+  display: block !important;
+  /* Sidebar persists */
+}
+
+.table-container.panel-open .hide-on-panel {
+  /* display: none !important; */
+  /* Do not hide, just allow shrinking */
+  opacity: 0.5;
+}
+
+.table-container.panel-open {
+  flex: 1;
+  min-width: 250px;
+  /* Allow ranking table to shrink while open */
+  padding-right: 0;
+  min-height: 600px; /* Ensure height balance with left panel */
+}
+
+
+.table-container {
+  flex: 1;
+  overflow: visible;
+  /* 내부 스크롤 제거 */
+  min-height: 600px;
+}
+
+.sliding-profile-panel {
+  position: fixed;
+  top: 0;
+  right: -560px;
+  width: 535px;
+  height: 100vh;
+  overflow-y: auto;
+  overflow-x: hidden;
+  transition: right 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+  background: #1c2128;
+  border-left: 1px solid var(--border-color);
+  display: flex;
+  flex-direction: column;
+  scrollbar-width: thin;
+  z-index: 500;
+  box-shadow: -6px 0 24px rgba(0, 0, 0, 0.5);
+}
+
+.sliding-profile-panel.open {
+  right: 0;
+}
+
+/* Statistics Grid inside Panel */
+.sp-stats-grid {
+  display: grid;
+  grid-template-columns: auto 1fr; /* 좌측 콘텐츠 너비에 자동 맞춤 */
+  grid-auto-flow: column; /* 세로로 먼저 채움 */
+  grid-template-rows: repeat(6, auto); /* 6행 고정 (좌 6개, 우 6개) */
+  gap: 6px; /* 모바일 대응: 간격 축소 */
+  background: rgba(0, 0, 0, 0.2);
+  padding: 8px; /* 모바일 대응: 패딩 축소 */
+  border-radius: 8px;
+  margin-bottom: 5px;
+}
+
+.sp-stat-item {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.sp-stat-label {
+  font-size: 0.75rem;
+  color: var(--text-dim);
+}
+
+.sp-stat-val {
+  font-size: 0.9rem; /* 모바일 대응: 소폭 축소 */
+  font-weight: 500;
+  color: #fff;
+}
+
+.sp-win-rate {
+  display: block;
+  font-size: 0.8rem; /* 다른 폰트와 밸런스 조정 */
+  color: #fff; /* 사용자 요청: 다시 선명한 흰색으로 */
+  margin-top: 2px;
+}
+
+.sp-stats-card {
+  display: none !important;
+  /* Hide on desktop by default as per request */
+}
+
+
+
+
+.panel-content {
+  padding: 12px;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 0px;
+  /* 섹션 간 공백 제거 */
+}
+
+.close-panel-btn {
+  background: none;
+  color: var(--text-dim);
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  font-size: 0.85rem;
+  font-weight: bold;
+  transition: color 0.2s;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.close-panel-btn:hover {
+  color: #F85149;
+}
+
+/* Hide mobile-only close button on desktop */
+.mobile-close-btn {
+  display: none;
+}
+
+/* Python V82 UI Style Cards */
+.sp-card {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 0px;
+  /* 공백 완전 제거 */
+}
+
+.sp-card-title {
+  background: #1c2128;
+  border: 1px solid var(--border-color);
+  border-bottom: none;
+  font-family: 'Pretendard', 'Inter', sans-serif;
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--accent-blue);
+  padding: 6px 12px;
+  border-top-left-radius: 6px;
+  border-top-right-radius: 6px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.record-container {
+  display: flex;
+  gap: 8px;
+}
+
+.sp-card-body {
+  background: var(--card-bg);
+  border: 1px solid var(--border-color);
+  padding: 12px;
+  border-bottom-left-radius: 6px;
+  border-bottom-right-radius: 6px;
+}
+
+/* Records Block */
+.record-block {
+  flex: 1;
+  background: #1c2128;
+  border-radius: 6px;
+  padding: 10px;
+  box-sizing: border-box;
+  min-width: 0;
+  /* Important for flex shrink */
+}
+
+.record-title {
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: var(--accent-blue);
+  margin-bottom: 6px;
+}
+
+.record-row {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 6px;
+}
+
+.record-label {
+  font-size: 0.8rem;
+  color: var(--text-dim);
+  white-space: nowrap !important;
+}
+
+.record-val {
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: #fff;
+  white-space: nowrap !important;
+}
+
+.record-swr {
+  font-size: 1.1rem;
+  font-weight: 700;
+  margin-bottom: 6px;
+  font-family: 'Roboto Mono', monospace;
+}
+
+.record-bar-bg {
+  height: 6px;
+  background: var(--border-color);
+  border-radius: 3px;
+  width: 200px;
+  max-width: 100%;
+  margin-bottom: 12px;
+  overflow: hidden;
+}
+
+.record-bar-fill {
+  height: 100%;
+  border-radius: 3px;
+  background: #238636;
+}
+
+.extra-row {
+  display: flex;
+  justify-content: space-between;
+  padding: 2px 0;
+}
+
+.extra-label {
+  font-size: 0.8rem;
+  color: var(--text-dim);
+  white-space: nowrap !important;
+}
+
+.extra-val {
+  font-size: 0.85rem;
+  font-weight: 700;
+  white-space: nowrap !important;
+}
+
+/* Heroes Table inside Panel */
+.sp-hero-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.sp-hero-table th {
+  font-size: 0.8rem;
+  color: var(--text-dim);
+  padding: 6px 4px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.sp-hero-table td {
+  font-size: 0.85rem;
+  padding: 6px 4px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  color: #e0e0e0;
+}
+
+/* Desktop Columns 4,5 (Win Rate, Party Win Rate) (V116) */
+.sp-hero-table th:nth-child(4),
+.sp-hero-table td:nth-child(4),
+.sp-hero-table th:nth-child(5),
+.sp-hero-table td:nth-child(5) {
+  text-align: center !important;
+  padding-right: 0 !important;
+  padding-left: 0 !important;
+  width: 65px !important;
+}
+
+/* Desktop Column 3 (Play Count) shifted left for visual balance (V123) */
+.sp-hero-table th:nth-child(3),
+.sp-hero-table td:nth-child(3),
+.sp-hero-table th[data-hero-sort="playCnt"] {
+  text-align: center !important;
+  padding-right: 8px !important;
+  /* 사용자 피드백: 8px로 미세 조정 */
+  padding-left: 0 !important;
+  width: 73px !important;
+  /* 65px + 8px */
+}
+
+.sp-hero-col-rank {
+  color: var(--gold);
+  font-family: 'Roboto Mono', monospace;
+  font-weight: bold;
+}
+
+.sp-hero-col-play {
+  color: #a0a0c0;
+}
+
+.sp-percent-val {
+  font-family: 'Roboto Mono', monospace;
+  font-weight: 700;
+}
+
+/* 검색창 실시간 삭제 버튼 포함 컨테이너 */
+.search-container-v2 {
+  position: relative;
+  width: 100%;
+  margin-bottom: 12px;
+}
+
+.search-input-v2 {
+  width: 100%;
+  padding: 10px 35px 10px 15px;
+  background: var(--card-bg);
+  border: 1px solid var(--accent-blue);
+  border-radius: 8px;
+  color: white;
+  font-size: 0.9rem;
+  outline: none;
+  box-sizing: border-box;
+  transition: all 0.2s;
+}
+
+.search-input-v2:focus {
+  border-color: var(--purple);
+  background: rgba(0, 0, 0, 0.3);
+  box-shadow: 0 0 8px rgba(163, 113, 247, 0.3);
+}
+
+.search-clear-btn {
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  cursor: pointer;
+  color: #8b949e;
+  font-size: 1.2rem;
+  font-weight: bold;
+  user-select: none;
+  display: none;
+  /* 기본 숨김 */
+  line-height: 1;
+}
+
+.search-clear-btn:hover {
+  color: #f85149;
+}
+
+/* =========================================
+   Mobile Responsive Adjustments
+========================================= */
+@media (max-width: 900px) {
+
+  html,
+  body {
+    overflow-y: auto;
+    /* Allow vertical scrolling on mobile */
+  }
+
+  .container {
+    height: auto;
+    min-height: 100vh;
+  }
+
+  /* Stack grid vertically */
+  .dashboard-grid {
+    grid-template-columns: 1fr;
+    height: auto;
+  }
+
+  /* Left panel full width */
+  .left-panel {
+    width: 100%;
+    min-height: auto;
+    position: static;
+  }
+
+  /* Hide original detailed info card once statistics are moved to the panel */
+  .left-panel .card {
+    display: none !important;
+  }
+
+  /* Remove gap between search and top pagination */
+  .search-container-v2 {
+    margin-bottom: 0 !important;
+  }
+
+  #pagination,
+  #pagination-top {
+    justify-content: center !important;
+    padding-top: 5px !important;
+    padding-bottom: 5px !important;
+    margin-top: 0 !important;
+    width: 100% !important;
+    gap: 5px !important;
+  }
+
+  .pg-input-wrapper {
+    display: none !important;
+  }
+
+
+
+  /* Right panel ranking table */
+  .right-panel {
+    width: 100%;
+  }
+
+  .rank-scroll-area {
+    min-height: 500px;
+    display: flex;
+    flex-direction: column;
+    /* Give it some height for mobile */
+  }
+
+  /* Global Scale Adjustment for Mobile as requested (0.8x feel) */
+  :root {
+    --mobile-font-scale: 0.85;
+  }
+
+  body {
+    font-size: calc(1rem * var(--mobile-font-scale)) !important;
+  }
+
+  .container {
+    padding: 10px !important;
+  }
+
+  /* Header user info optimization */
+  .profile-card {
+    flex-direction: column !important;
+    /* Stack rows vertically */
+    align-items: stretch !important;
+    padding: 12px !important;
+    gap: 8px !important;
+  }
+
+  /* Row 1: Nickname and Rank/WR */
+  .profile-card>.user-info {
+    display: flex !important;
+    flex-direction: column !important;
+    width: 100% !important;
+  }
+
+  /* We need a better way to align Nickname and Stats in one row. 
+     Let's adjust the structure conceptually or use Flexbox magic. */
+  .user-info-top-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    width: 100%;
+    margin-bottom: 5px;
+  }
+
+  .profile-card h1 {
+    font-size: 1.2rem !important;
+    margin: 0 !important;
+    flex: 1;
+    min-width: 0;
+    white-space: nowrap !important;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .header-stats {
+    position: static !important;
+    display: flex !important;
+    flex-direction: row !important;
+    align-items: baseline !important;
+    gap: 8px !important;
+    margin-left: 10px !important;
+    flex-shrink: 0 !important;
+  }
+
+  #user-rank,
+  #user-season-wr {
+    font-size: 1.4rem !important;
+    font-weight: 800 !important;
+    color: #ffa657 !important;
+    line-height: 1 !important;
+  }
+
+  /* Row 2: ANO and Grade */
+  .user-meta {
+    font-size: 0.8rem !important;
+    gap: 10px !important;
+    margin-bottom: 5px !important;
+    justify-content: center !important;
+  }
+
+  .hero-pagination-wrapper {
+    display: flex !important;
+    flex-wrap: wrap !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 15px !important;
+    margin-top: 5px !important;
+  }
+
+  .hero-list {
+    margin-top: 0 !important;
+    justify-content: center !important;
+  }
+
+  .hero-mini-icon {
+    width: 30px !important;
+    /* Scaled down from 34px */
+    height: 30px !important;
+  }
+
+  /* Profile Panel (Sliding Panel) - FULL BOTTOM MODAL SHEET for Mobile */
+  .sliding-profile-panel {
+    position: fixed !important;
+    top: auto !important;
+    bottom: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
+    width: 100vw !important;
+    max-width: 100vw !important;
+    height: 85vh !important;
+    border-radius: 20px 20px 0 0 !important;
+    transform: translateY(100%) !important;
+    box-shadow: 0 -10px 30px rgba(0, 0, 0, 0.6) !important;
+    z-index: 1000 !important;
+    overflow-y: auto !important;
+    overflow-x: hidden !important;
+    background: var(--bg-color) !important;
+    transition: transform 0.4s cubic-bezier(0.25, 1, 0.5, 1) !important;
+    padding: 10px 14px 0px 14px !important;
+    /* Bottom padding set to 0 to align close button perfectly - V104 */
+    box-sizing: border-box !important;
+    display: flex !important;
+    flex-direction: column !important;
+    font-size: 0.82rem !important;
+    /* Reset desktop right-slide */
+    right: 0 !important;
+    border-left: none !important;
+  }
+
+  .sliding-profile-panel.open {
+    transform: translateY(0) !important;
+    right: 0 !important;
+  }
+
+  /* Mobile Bottom Close Button (V103) */
+  .mobile-close-btn {
+    display: block !important;
+    width: 100% !important;
+    padding: 10px !important;
+    /* Reduced vertical padding (approx 3/4) - V104 */
+    margin-top: 0px !important;
+    /* Removed top margin to close the gap - V106 */
+    width: calc(100% + 28px) !important;
+    /* Offset panel padding (14px * 2) */
+    margin-left: -14px !important;
+    background: rgba(255, 255, 255, 0.1) !important;
+    border: none !important;
+    border-top: 1px solid rgba(255, 255, 255, 0.2) !important;
+    border-radius: 0 !important;
+    /* Squared corners for bottom edge look */
+    color: #fff !important;
+    font-size: 1rem !important;
+    font-weight: bold !important;
+    cursor: pointer !important;
+    text-align: center !important;
+    transition: background 0.2s !important;
+  }
+
+  .mobile-close-btn:active {
+    background: rgba(255, 255, 255, 0.2) !important;
+  }
+
+  .sliding-profile {
+    /* Reset any old style — now uses .sliding-profile-panel */
+    all: unset;
+  }
+
+  .sliding-profile-panel .sp-card {
+    margin-bottom: 12px !important;
+  }
+
+  /* 마지막 카드의 마진을 제거하여 닫기 버튼과 완벽히 밀착 (V106) */
+  .sliding-profile-panel .sp-card:last-of-type {
+    margin-bottom: 0 !important;
+  }
+
+
+  /* Mobile optimized grid */
+  .sliding-profile-panel .sp-stats-grid {
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 8px !important;
+    padding: 10px !important;
+  }
+
+  .sp-stats-card {
+    display: flex !important;
+    /* Show only on mobile panel */
+    flex-direction: column !important;
+  }
+
+  .sp-stat-val {
+    font-size: 0.85rem !important;
+  }
+
+
+  .sliding-profile-panel .sp-card-body {
+    padding: 8px !important;
+  }
+
+  /* Stack Record Blocks Vertically */
+  .record-container {
+    flex-direction: column !important;
+    gap: 8px !important;
+  }
+
+  .record-block {
+    padding: 8px !important;
+    min-width: 0 !important;
+  }
+
+  .record-swr {
+    font-size: 0.95rem !important;
+    margin-bottom: 4px !important;
+  }
+
+  .stat-row,
+  .extra-row,
+  .record-row {
+    padding: 3px 0 !important;
+  }
+
+  .stat-label,
+  .record-label,
+  .extra-label {
+    font-size: 0.7rem !important;
+    white-space: nowrap !important;
+  }
+
+  .sliding-profile-panel .sp-stats-grid {
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 8px !important;
+    padding: 8px !important;
+  }
+
+  .sp-stat-val {
+    font-size: 0.85rem !important;
+  }
+
+  .record-val,
+  .extra-val {
+    font-size: 0.8rem !important;
+  }
+
+  /* Table Rank column specific gold bold */
+  .sp-hero-col-rank {
+    color: var(--gold) !important;
+    font-weight: bold !important;
+  }
+
+
+
+  .table-container {
+    overflow-x: auto !important;
+  }
+
+  /* Table within Profile Panel */
+  .sp-hero-table-container {
+    overflow-x: auto !important;
+  }
+
+  /* Mobile Profile Panel Table Alignment V42 */
+  .sp-hero-table th,
+  .sp-hero-table td {
+    text-align: center !important;
+    font-size: 0.75rem !important;
+    padding: 6px 2px !important;
+    white-space: nowrap !important;
+    line-height: 1.2;
+  }
+
+  /* Name column remains left-aligned */
+  .sp-hero-table th:nth-child(2),
+  .sp-hero-table td:nth-child(2) {
+    text-align: left !important;
+    padding-left: 4px !important;
+  }
+
+  /* Column 3 (Play Count) - Unified and Center Aligned (V115) */
+  .sp-hero-table th:nth-child(3),
+  .sp-hero-table td:nth-child(3),
+  .sp-hero-table th[data-hero-sort="playCnt"] {
+    width: 70px !important;
+    /* 승률 컬럼과 비슷한 너비 할당 */
+    padding: 6px 0 !important;
+    /* 여백을 0으로 만들어 중앙 정렬이 완벽하게 되도록 유도 */
+    text-align: center !important;
+    /* 사용자 요청: 중앙 정렬 */
+  }
+
+  /* Column 4 (Win Rate) - Uniform width for symmetry */
+  .sp-hero-table th:nth-child(4),
+  .sp-hero-table td:nth-child(4) {
+    width: 65px !important;
+    padding: 6px 0 !important;
+    text-align: center !important;
+  }
+
+  /* Column 5 (Party Win Rate) - Uniform width for symmetry */
+  .sp-hero-table th:nth-child(5),
+  .sp-hero-table td:nth-child(5) {
+    width: 65px !important;
+    padding: 6px 0 !important;
+    text-align: center !important;
+  }
+
+  #sp-hero-list td {
+    padding: 5px 2px !important;
+    font-size: 0.75rem !important;
+  }
+
+  /* Ranking Table - Ultra Compact on Mobile (sticking columns) */
+  .ranking-table thead th {
+    padding: 6px 1px !important;
+    font-size: 0.72rem !important;
+    /* Increased from 0.65rem (1.1x) - V101 */
+    white-space: nowrap !important;
+  }
+
+  .ranking-table td {
+    padding: 8px 1px !important;
+    font-size: 0.72rem !important;
+    /* Increased from 0.65rem (1.1x) - V101 */
+  }
+
+  /* Column 1 (Rank) */
+  .ranking-table td:nth-child(1),
+  .ranking-table th:nth-child(1) {
+    padding-right: 0px !important;
+    width: 35px !important;
+    /* Fixed width */
+  }
+
+  /* Column 2 (Nickname) */
+  .ranking-table td:nth-child(2),
+  .ranking-table th:nth-child(2) {
+    padding-left: 2px !important;
+    padding-right: 0px !important; /* 우측 여백 제거 */
+    width: 60px !important; /* 더 축소 */
+    max-width: 60px !important;
+    text-align: left !important;
+  }
+
+  /* Column 4 (Grade) - Note: 3 is hidden */
+  .ranking-table td:nth-child(4),
+  .ranking-table th:nth-child(4) {
+    padding-left: 0px !important; /* 좌측 여백 제거 (닉네임과 붙이기) */
+    padding-right: 2px !important;
+    width: 45px !important; /* 텍스트 뭉침을 고려한 너비 */
+  }
+
+  /* Column 5 (Win/Loss) */
+  .ranking-table td:nth-child(5),
+  .ranking-table th:nth-child(5) {
+    padding-left: 0px !important;
+    padding-right: 2px !important;
+    width: 80px !important; /* 바 너비 축소에 맞춰 열 너비 조정 */
+  }
+
+  .wl-bar-container {
+    width: 65px !important; /* 바 너비 극단적 축소 (75px -> 65px) */
+    height: 18px !important;
+    line-height: 18px !important;
+    font-size: 0.72rem !important;
+  }
+
+  .wl-bar-win,
+  .wl-bar-loss {
+    padding: 0 2px !important;
+  }
+
+  /* Column 6 (WinRate %) */
+  .ranking-table td:nth-child(6),
+  .ranking-table th:nth-child(6) {
+    width: 45px !important;
+  }
+
+  /* Table container horizontal scrolling - prevent it if possible */
+  .table-container {
+    overflow-x: hidden !important;
+    /* Try to hide scroll */
+    -webkit-overflow-scrolling: touch !important;
+  }
+
+  /* Hide specific columns on mobile for better fit - HIGH PRIORITY */
+  .hide-on-mobile {
+    display: none !important;
+  }
+}
