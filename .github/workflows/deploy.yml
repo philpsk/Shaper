@@ -1,0 +1,69 @@
+name: Deploy Pages
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+  actions: write
+
+# GitHub Pages 배포 완료를 위한 concurrency 설정
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+
+      - name: Setup Pages
+        uses: actions/configure-pages@v5
+
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v4
+        with:
+          path: '.'
+
+  deploy:
+    needs: build
+    permissions:
+      contents: read
+      pages: write
+      id-token: write
+      actions: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v5
+
+      - name: Auto re-dispatch on failure
+        if: failure()
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          echo "배포 실패 감지 — 30초 대기 후 자동 재실행을 요청합니다."
+          sleep 30
+          LATEST_SHA=$(curl -s -H "Authorization: Bearer $GH_TOKEN" \
+            "https://api.github.com/repos/${{ github.repository }}/commits/main" | jq -r '.sha // empty')
+          if [ -n "$LATEST_SHA" ] && [ "$LATEST_SHA" != "${{ github.sha }}" ]; then
+            echo "최신 커밋($LATEST_SHA)이 이미 존재하므로 이전 커밋 재시도를 중단합니다."
+            exit 0
+          fi
+          WF_FILE=$(echo "${{ github.workflow_ref }}" | sed -E 's|.*/\.github/workflows/([^@]+)@.*|\1|')
+          WF_FILE="${WF_FILE:-deploy.yml}"
+          curl -f -s -X POST \
+            -H "Authorization: Bearer $GH_TOKEN" \
+            -H "Accept: application/vnd.github+json" \
+            "https://api.github.com/repos/${{ github.repository }}/actions/workflows/${WF_FILE}/dispatches" \
+            -d '{"ref":"main"}'
